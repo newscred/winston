@@ -10,10 +10,15 @@ var path = require('path'),
     vows = require('vows'),
     assert = require('assert'),
     winston = require('../../lib/winston'),
+    common = require('../../lib/winston/common'),
+    sinon = require('sinon'),
     helpers = require('../helpers');
 
+var testMetadata = { meta: 'data' };
+
 var npmTransport = new (winston.transports.Console)(),
-    syslogTransport = new (winston.transports.Console)({ levels: winston.config.syslog.levels });
+    syslogTransport = new (winston.transports.Console)({ levels: winston.config.syslog.levels }),
+    metaTransport = new (winston.transports.Console)({ addMeta: testMetadata });
 
 vows.describe('winston/transports/console').addBatch({
   "An instance of the Console Transport": {
@@ -34,6 +39,15 @@ vows.describe('winston/transports/console').addBatch({
         assert.isNull(err);
         assert.isTrue(logged);
       })
+    },
+    "with addMeta": {
+      "should log the additional metadata": function () {
+        sinon.spy(common, 'log');
+        metaTransport.log('info', 'Test', {}, function () {
+          assert.deepEqual(common.log.getCall(0).args[0].meta, testMetadata);
+          common.log.restore();
+        });
+      }
     }
   }
 }).export(module);

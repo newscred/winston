@@ -25,6 +25,7 @@
     "stack-trace": "0.0.x"
   },
   "devDependencies": {
+    "sinon": "^1.14.1",
     "vows": "0.7.x"
   },
   "main": "./lib/winston",
